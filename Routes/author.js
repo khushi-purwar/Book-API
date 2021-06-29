@@ -55,5 +55,22 @@ routes.get('/author/:isbn',(req, res)=>{
     return res.json({authors : getAuthors});
 })
 
+// -----post request------------------------------------------
+
+/*
+Route =>             /author/new
+Description =>  to add a new  author
+Access => public
+Parameters => none
+Method => post
+ */
+
+routes.post('/author/new', (req,res)=>{
+    const {newAuthor} = req.body;
+
+    db.authors.push(newAuthor);
+    return res.json({authors: db.authors , message:"Author was added"})
+ })
+
 
 module.exports = routes;
