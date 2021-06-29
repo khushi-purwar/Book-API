@@ -94,6 +94,52 @@ routes.post('/book/new', (req,res)=>{
     return res.json({books: db.books , message:"Book was added"})
  })
  
+//  --------------------------put requests-----------------------
+
+
+/*
+Route =>             /book/update/
+Description =>  to update book details (title)
+Access => public
+Parameters => isbn
+Method => put
+ */
+
+routes.put('/book/update/:isbn',(req,res)=>{
+  db.books.forEach( (book)=>{
+   if(book.ISBN === req.params.isbn){
+       book.title = req.body.bookTitle;
+       return;
+   }
+  });
+  return res.json({book: db.books})
+})
+
+
+/*
+Route =>             /book/author/update/:isbn
+Description =>  to update or add new author
+Access => public
+Parameters => isbn
+Method => put
+*/
+routes.put('/book/author/update/:isbn',(req,res)=>{
+    // update book database -> book should be created before
+    db.books.forEach( (book)=>{
+       if(book.ISBN === req.params.isbn){
+           return book.authors.push(req.body.newAuthor);
+       }
+    })
+    // update author database -> author should be created before
+    db.authors.forEach( (author)=>{
+        if(author.id === req.body.newAuthor){
+            return author.books.push(req.params.isbn);
+        }
+    })
+
+    return res.json({books:db.books, author:db.authors, message: "New Author was added"})
+})
+
 
 
 module.exports = routes;

@@ -72,5 +72,24 @@ routes.post('/author/new', (req,res)=>{
     return res.json({authors: db.authors , message:"Author was added"})
  })
 
+//  put request -----------------------------------
 
+/*Route =>             /author/update/
+Description =>  to update book details (name)
+Access => public
+Parameters => id
+Method => put
+ */
+
+routes.put('/author/update/:id',(req,res)=>{
+    db.authors.forEach( (author)=>{
+     if(author.id === parseInt(req.params.id)){
+         author.name = req.body.authorName;
+         return;
+     }
+    });
+    return res.json({author: db.authors})
+ })
+
+ 
 module.exports = routes;
