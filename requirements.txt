@@ -1,0 +1,69 @@
+// requirements
+
+// we are a company that handles a book publications
+
+// Book -> ISBN, TITLE, AUthor [],Language, Pub Date, Num page category[] 
+
+// authors -> name, id, books[]  (who is writing a book)
+
+// publications -> name , id, books[]  ( who is selling)
+
+// books ----------------------------------------------
+
+****GET***
+->  to list all the books
+-> to get specific book
+-> to get a list of books based on category
+-> to get a list of books based on authors
+
+****POST***
+-> add a new book
+
+***PUT***
+-> to update a book details
+-> update/ add new author
+
+***DELETE****
+-> delete a book
+-> delete a author from a book
+
+// authors ------------------------------------------------
+->  we need an API
+
+******GET********
+->  to list all the authors
+-> to get specific author
+-> to get a list of authors based on a book (isbn)
+
+****POST***
+-> add a new author
+
+***PUT***
+-> to update a author details
+
+***DELETE****
+-> delete a whole object of author
+
+//  publications -----------------------------------------------
+->  we need an API
+
+****GET********-----
+->  to list all the publications
+-> to get specific publications
+-> to get a list of publications based on a book
+
+****POST***----------
+-> add a new publication
+
+***PUT***---------
+-> to update a publication details
+-> update/add a new book to an publication  (each book is published by one person, but one person can publish many books)
+
+***DELETE****--------
+-> delete a publication
+-> deleta book from the publication
+
+--------------------------------------------------------------------xxxxx--------
+**** URL SE DATA STRING FORMAT MEIN JATA HAI*******
+
+*** newly Data created is stored in the ram and vanish when server restarted***
