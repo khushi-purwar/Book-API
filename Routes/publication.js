@@ -123,5 +123,57 @@ routes.put('/publication/update/book/:isbn',(req,res)=>{
 
 })
 
+// ------------------Delete Request----------------------------
+
+/*
+ Route =>             /publication/delete/
+ Description =>  to delete a publication
+ Access => public
+ Parameters => id
+ Method => delete
+  */
+
+ routes.delete('/publication/delete/:id',(req,res)=>{
+    const updatedPublicationDb = db.publications.filter( (publication)=>
+           publication.id !== parseInt(req.params.id)
+    ) ;
+    db.publications = updatedPublicationDb;
+    return res.json({publications: db.publications});
+})
+
+
+/*
+ Route =>             /publication/delete/book/:isbn/:id
+ Description =>  to delete a book from the publication
+ Access => public
+ Parameters => isbn, pubId
+ Method => delete
+  */
+
+routes.delete('/publication/delete/book/:isbn/:pubId', (req,res) =>{
+
+    // update publication database
+    db.publications.forEach( (publication) =>{
+        if(publication.id === parseInt(req.params.pubId)){
+            const newBooksList = publication.books.filter( (book) =>
+            book !== req.params.isbn
+            )
+          publication.books = newBooksList;
+        return ;
+        }
+    })
+    // update book database
+    db.books.forEach( (book)=>{
+        if(book.ISBN === req.params.isbn){
+            book.publication = 0;   // no publication available
+            return; 
+        }
+    });
+    return res.json({
+        publication:db.publications, 
+        book: db.books,
+        message : "Book was deleted"
+     })
+})
 
 module.exports = routes;

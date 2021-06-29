@@ -140,6 +140,64 @@ routes.put('/book/author/update/:isbn',(req,res)=>{
     return res.json({books:db.books, author:db.authors, message: "New Author was added"})
 })
 
+// ------------------Delete Request----------------------------
+
+/*
+ Route =>             /book/delete/
+ Description =>  to delete a book
+ Access => public
+ Parameters => isbn
+ Method => delete
+  */
+
+ routes.delete('/book/delete/:isbn',(req,res)=>{
+  const updatedBookDb = db.books.filter( (book)=>
+         book.ISBN !== req.params.isbn
+  ) ;
+  db.books = updatedBookDb;
+  return res.json({books: db.books});
+})
+
+/*
+Route =>             /book/delete/author
+Description =>  to delete an author from book and update author database as well
+Access => public
+Parameters => isbn, authorId
+Method => delete
+*/
+
+routes.delete('/book/delete/author/:isbn/:authorId', (req,res)=>{
+
+  // update book database      {forEach is used  becoz we are not modifying the whole database}
+  db.books.forEach( (book)=>{ 
+    if(book.ISBN === req.params.isbn){
+      const newAuthorList = book.authors.filter( (author) =>
+         author !== parseInt(req.params.authorId)
+      );
+      book.authors = newAuthorList;
+      return ;
+    }
+  });
+      
+ 
+  // update author database
+
+  db.authors.forEach( (author)=>{ 
+      if(author.id === parseInt(req.params.authorId)){
+        const newBookList = author.books.filter( (book) =>
+           book !== req.params.isbn
+        );
+        author.books = newBookList;
+        return ;
+      }
+    });
+
+ return res.json({
+     book:db.books, 
+     author: db.authors,
+     message : "Author was deleted"
+  })
+});
 
 
 module.exports = routes;

@@ -91,5 +91,24 @@ routes.put('/author/update/:id',(req,res)=>{
     return res.json({author: db.authors})
  })
 
- 
+
+ // ------------------Delete Request----------------------------
+
+/*
+ Route =>             /author/delete/
+ Description =>  to delete an author
+ Access => public
+ Parameters => id
+ Method => delete
+  */
+
+routes.delete('/author/delete/:id',(req,res)=>{
+    const updatedAuthorDb = db.authors.filter( (author)=>
+           author.id != req.params.id
+    ) ;
+    db.authors = updatedAuthorDb;
+    return res.json({authors: db.authors});
+})
+
+
 module.exports = routes;
