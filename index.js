@@ -6,6 +6,7 @@ const app = express();
 
 // database
 // const db = require('./database/index')
+ const mongoose = require('mongoose');
 
 // configurations
 app.use(express.json());
