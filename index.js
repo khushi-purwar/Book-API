@@ -10,6 +10,7 @@ const app = express();
 // database
 // const db = require('./database/index')
  const mongoose = require('mongoose');
+// mongodb is schemaless but mongoose is not schemaless, helps in validation part
 
  // establish connection
  mongoose.connect(process.env.MONGO_URL, {
