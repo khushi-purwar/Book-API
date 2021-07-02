@@ -28,7 +28,7 @@ console.log(err.message)
 app.use(express.json());
 
 // importing bookRoutes, authorRoutes, publicationRoutes
-const bookRoutes = require('./Routes/books');
+const bookRoutes = require('./Routes/book');
 const authorRoutes = require('./Routes/author');
 const publicationRoutes = require('./Routes/publication');
 

@@ -2,7 +2,9 @@ const express = require('express');
 const routes = express.Router();
 
 // database 
-const db = require('../database/index')
+// const db = require('../database/index')
+const PublicationModel = require('../database/publication')
+const BookModel = require('../database/book');
 
 //  get routes-----------------------------------------------------\
 
@@ -13,8 +15,14 @@ Access => public
 Parameters => none
 Method => get
  */
-routes.get('/publications',(req, res)=>{
-    return res.json({publications: db.publications});
+routes.get('/publications',async(req, res)=>{
+
+    // using array
+    // return res.json({publications: db.publications});
+
+    //  using mongoDB
+    const getAllPublication = await PublicationModel.find();
+    return res.json(getAllPublication);
 })
 
 /*
@@ -25,14 +33,23 @@ Parameters => id
 Method => get
  */
 
-routes.get('/publications/:id',(req, res)=>{
-    const getPublication = db.publications.filter(
+routes.get('/publication/:id',async(req, res)=>{
+    // using array
+    /*const getPublication = db.publications.filter(
         (publication)=> publication.id === parseInt(req.params.id)
     );
     if(getPublication.length === 0){
       return  res.json({error: `No publication found for the ID ${req.params.id}`})
     }
+    return res.json({publication : getPublication});
+    */
 
+    // usimg mongoDB
+    const getPublication = await PublicationModel.find(
+        {
+            id: parseInt(req.params.id)
+        }
+    )
     return res.json({publication : getPublication});
 })
 
@@ -44,15 +61,23 @@ Parameters => isbn
 Method => get
  */
 
-routes.get('/publication/:isbn',(req, res)=>{
-    const getPublications = db.publications.filter(
+routes.get('/publications/:isbn', async(req, res)=>{
+
+    // using array
+    /*const getPublications = db.publications.filter(
         (publication)=> publication.books.includes(req.params.isbn)
     );
     if(getPublications.length === 0){
       return  res.json({error: `No publication found for the ISBN of ${req.params.isbn}`})
     }
+    return res.json({publications : getPublications});*/
 
-    return res.json({publications : getPublications});
+    const getPublications = await PublicationModel.find(
+        { 
+            books: req.params.isbn
+        }
+    );
+    res.json({publications : getPublications});
 })
 
 //  post routes-----------------------------------------------------
@@ -66,10 +91,17 @@ Method => post
  */
 
 routes.post('/publication/new', (req,res)=>{
-    const {newPublication} = req.body;
+    
+    //  using array
+    // const {newPublication} = req.body;
+    // db.publications.push(newPublication);
+    // return res.json({publications: db.publications , message:"Publication was added"})
 
-    db.publications.push(newPublication);
-    return res.json({publications: db.publications , message:"Publication was added"})
+    //  using mongoDB
+    const { newPublication } = req.body;
+    PublicationModel.create(newPublication);
+  
+    return res.json({ message: "Publication was added" })
  })
 
 //  ----put request---------------------------------------
@@ -81,14 +113,29 @@ Parameters => id
 Method => put
  */
 
-routes.put('/publication/update/:id',(req,res)=>{
-    db.publications.forEach( (publication)=>{
+routes.put('/publication/update/:id',async(req,res)=>{
+    // using array
+    /*db.publications.forEach( (publication)=>{
      if(publication.id === parseInt(req.params.id)){
          publication.name = req.body.publicationName;
          return;
      }
     });
-    return res.json({publication: db.publications})
+    return res.json({publication: db.publications})*/
+
+    // using mongodb
+    const updatedPub = await PublicationModel.findOneAndUpdate(
+        {
+            id: parseInt(req.params.id)
+        },
+        {
+            name : req.body.publicationName
+        },
+        {
+            new: true
+        }
+    );
+    res.json({publication: updatedPub, message: `Publication is updated of id ${req.params.id}`})
 })
 
  /*Route =>             /publication/update/book/
@@ -98,7 +145,9 @@ Parameters => isbn
 Method => put
  */
 
-routes.put('/publication/update/book/:isbn',(req,res)=>{
+routes.put('/publication/update/book/:isbn',async(req,res)=>{
+    // using array
+    /*
      // update publication database 
      db.publications.forEach( (publication)=>{
         if(publication.id === req.body.pubId){
@@ -119,8 +168,46 @@ routes.put('/publication/update/book/:isbn',(req,res)=>{
              books:db.books, 
              message: "New Publication was added"
          }
-    )
+    );
+    */
 
+    // using mongoDB
+    // updated publication database
+    const updatedPublication = await PublicationModel.findOneAndUpdate(
+        {
+            id : req.body.pubId
+        },
+        {
+            $addToSet : {
+                books : req.params.isbn
+            }
+        },
+        {
+            new: true
+        }
+    );
+    
+
+    // updated book database
+
+    const updatedBook = await BookModel.findOneAndUpdate(
+        {
+            ISBN : req.params.isbn
+        },
+        {
+           publication : req.body.pubId
+        },
+        {
+            new: true
+        }
+    );
+    
+
+    res.json(
+        {publication : updatedPublication, 
+        book : updatedBook,
+        message : `publication was updated of id ${req.body.pubId}`
+    });
 })
 
 // ------------------Delete Request----------------------------
@@ -133,12 +220,26 @@ routes.put('/publication/update/book/:isbn',(req,res)=>{
  Method => delete
   */
 
- routes.delete('/publication/delete/:id',(req,res)=>{
-    const updatedPublicationDb = db.publications.filter( (publication)=>
+ routes.delete('/publication/delete/:id', async(req,res)=>{
+     // using array
+    /*const updatedPublicationDb = db.publications.filter( (publication)=>
            publication.id !== parseInt(req.params.id)
     ) ;
     db.publications = updatedPublicationDb;
     return res.json({publications: db.publications});
+    */
+
+    // using mongoDB
+    const deletePublication =  await PublicationModel.findOneAndDelete(
+        {
+            id: parseInt(req.params.id)
+        }
+    );
+    res.json(
+        {
+            publication: deletePublication, 
+            message: `publication of id ${req.params.id} was deleted`
+        });
 })
 
 
@@ -150,8 +251,10 @@ routes.put('/publication/update/book/:isbn',(req,res)=>{
  Method => delete
   */
 
-routes.delete('/publication/delete/book/:isbn/:pubId', (req,res) =>{
+routes.delete('/publication/delete/book/:isbn/:pubId', async(req,res) =>{
 
+    // using array
+    /*
     // update publication database
     db.publications.forEach( (publication) =>{
         if(publication.id === parseInt(req.params.pubId)){
@@ -173,7 +276,45 @@ routes.delete('/publication/delete/book/:isbn/:pubId', (req,res) =>{
         publication:db.publications, 
         book: db.books,
         message : "Book was deleted"
-     })
+     });
+     */
+
+     // using mongoDB
+
+     // update Publication database
+     const deletedPub =  await PublicationModel.findOneAndUpdate(
+         {
+             id: parseInt(req.params.pubId)
+         },
+         {
+             $pull: {
+                 books : req.params.isbn
+             }
+         },
+         {
+             new: true
+         }
+     );
+
+      // update Book database
+      const deletedBook =  await BookModel.findOneAndUpdate(
+        {
+            ISBN: req.params.isbn
+        },
+        {
+            publication : 0
+            
+        },
+        {
+            new: true
+        }
+    );
+
+    return res.json({
+        publication:deletedPub, 
+        book: deletedBook,
+        message : "Book was deleted"
+     });
 })
 
 module.exports = routes;

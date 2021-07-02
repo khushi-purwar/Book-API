@@ -2,7 +2,8 @@ const express = require('express');
 const routes = express.Router();
 
 // database 
-const db = require('../database/index')
+// const db = require('../database/index')
+const AuthorModel = require('../database/author')
 
 //  get routes-----------------------------------------------------
 
@@ -13,8 +14,14 @@ Access => public
 Parameters => none
 Method => get
  */
-routes.get('/authors',(req, res)=>{
-    return res.json({authors: db.authors});
+routes.get('/authors', async (req, res) => {
+
+    // usimg array
+    // return res.json({authors: db.authors});
+
+    // using mongodb
+    const getAllAuthors = await AuthorModel.find();
+    return res.json(getAllAuthors);
 })
 
 /*
@@ -25,8 +32,10 @@ Parameters => id
 Method => get
  */
 
-routes.get('/authors/:id',(req, res)=>{
-    const getAuthor = db.authors.filter(
+routes.get('/authors/:id', async (req, res) => {
+
+    //  using array
+    /* const getAuthor = db.authors.filter(
         (author)=> author.id === parseInt(req.params.id)
     );
     if(getAuthor.length === 0){
@@ -34,6 +43,15 @@ routes.get('/authors/:id',(req, res)=>{
     }
 
     return res.json({author : getAuthor});
+    */
+
+    // using mongoDB
+    const getAuthor = await AuthorModel.find({ id: req.params.id })
+
+    if (!getAuthor) {
+        return res.json({ error: `No author found for the id  ${req.params.id}` })
+    }
+    return res.json({ author: getAuthor });
 })
 
 /*
@@ -44,8 +62,9 @@ Parameters => isbn
 Method => get
  */
 
-routes.get('/author/:isbn',(req, res)=>{
-    const getAuthors = db.authors.filter(
+routes.get('/author/:isbn', async (req, res) => {
+    // using array
+    /*const getAuthors = db.authors.filter(
         (author)=> author.books.includes(req.params.isbn)
     );
     if(getAuthors.length === 0){
@@ -53,6 +72,18 @@ routes.get('/author/:isbn',(req, res)=>{
     }
 
     return res.json({authors : getAuthors});
+    */
+
+    // using mongodb
+    const getAuthors = await AuthorModel.find(
+        {
+            books: req.params.isbn
+        });
+    if (!getAuthors) {
+        return res.json({ error: `No author found for the isbn  ${req.params.isbn}` })
+    }
+
+    return res.json({ authors: getAuthors });
 })
 
 // -----post request------------------------------------------
@@ -65,12 +96,19 @@ Parameters => none
 Method => post
  */
 
-routes.post('/author/new', (req,res)=>{
-    const {newAuthor} = req.body;
+routes.post('/author/new', (req, res) => {
 
-    db.authors.push(newAuthor);
-    return res.json({authors: db.authors , message:"Author was added"})
- })
+    // using array
+    // const {newAuthor} = req.body;
+    // db.authors.push(newAuthor);
+    // return res.json({authors: db.authors , message:"Author was added"})
+
+    // using mongoDB
+    const { newAuthor } = req.body;
+    AuthorModel.create(newAuthor);
+    return res.json({ message: "Author was added" })
+
+})
 
 //  put request -----------------------------------
 
@@ -81,18 +119,33 @@ Parameters => id
 Method => put
  */
 
-routes.put('/author/update/:id',(req,res)=>{
-    db.authors.forEach( (author)=>{
+routes.put('/author/update/:id', async (req, res) => {
+
+    // using array
+    /*db.authors.forEach( (author)=>{
      if(author.id === parseInt(req.params.id)){
          author.name = req.body.authorName;
          return;
      }
     });
     return res.json({author: db.authors})
- })
+    */
+    const updatedData = await AuthorModel.findOneAndUpdate(
+        {
+            id: parseInt(req.params.id)
+        },
+        {
+            name: req.body.authorName
+        },
+        {
+            new: true
+        }
+    );
+    res.json({ author: updatedData, messgae: "Author database was updated" })
+})
 
 
- // ------------------Delete Request----------------------------
+// ------------------Delete Request----------------------------
 
 /*
  Route =>             /author/delete/
@@ -102,12 +155,23 @@ routes.put('/author/update/:id',(req,res)=>{
  Method => delete
   */
 
-routes.delete('/author/delete/:id',(req,res)=>{
-    const updatedAuthorDb = db.authors.filter( (author)=>
+routes.delete('/author/delete/:id', async (req, res) => {
+    // using array
+    /*const updatedAuthorDb = db.authors.filter( (author)=>
            author.id != req.params.id
     ) ;
     db.authors = updatedAuthorDb;
     return res.json({authors: db.authors});
+     */
+    
+    // using mongoDB
+    const deleteData = await AuthorModel.findOneAndDelete(
+        {
+            id: req.params.id
+        }
+    )
+
+    res.json({ message: `Author was deleted of id ${req.params.id}` })
 })
 
 
