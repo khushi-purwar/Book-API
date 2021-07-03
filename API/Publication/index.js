@@ -3,8 +3,8 @@ const routes = express.Router();
 
 // database 
 // const db = require('../database/index')
-const PublicationModel = require('../database/publication')
-const BookModel = require('../database/book');
+const PublicationModel = require('../../database/publication')
+const BookModel = require('../../database/book');
 
 //  get routes-----------------------------------------------------\
 
@@ -15,7 +15,7 @@ Access => public
 Parameters => none
 Method => get
  */
-routes.get('/publications',async(req, res)=>{
+routes.get('',async(req, res)=>{
 
     // using array
     // return res.json({publications: db.publications});
@@ -33,7 +33,7 @@ Parameters => id
 Method => get
  */
 
-routes.get('/publication/:id',async(req, res)=>{
+routes.get('/:id',async(req, res)=>{
     // using array
     /*const getPublication = db.publications.filter(
         (publication)=> publication.id === parseInt(req.params.id)
@@ -61,7 +61,7 @@ Parameters => isbn
 Method => get
  */
 
-routes.get('/publications/:isbn', async(req, res)=>{
+routes.get('/is/:isbn', async(req, res)=>{
 
     // using array
     /*const getPublications = db.publications.filter(
@@ -90,7 +90,7 @@ Parameters => none
 Method => post
  */
 
-routes.post('/publication/new', (req,res)=>{
+routes.post('/new', (req,res)=>{
     
     //  using array
     // const {newPublication} = req.body;
@@ -113,7 +113,7 @@ Parameters => id
 Method => put
  */
 
-routes.put('/publication/update/:id',async(req,res)=>{
+routes.put('/update/:id',async(req,res)=>{
     // using array
     /*db.publications.forEach( (publication)=>{
      if(publication.id === parseInt(req.params.id)){
@@ -145,7 +145,7 @@ Parameters => isbn
 Method => put
  */
 
-routes.put('/publication/update/book/:isbn',async(req,res)=>{
+routes.put('/update/book/:isbn',async(req,res)=>{
     // using array
     /*
      // update publication database 
@@ -220,7 +220,7 @@ routes.put('/publication/update/book/:isbn',async(req,res)=>{
  Method => delete
   */
 
- routes.delete('/publication/delete/:id', async(req,res)=>{
+ routes.delete('/delete/:id', async(req,res)=>{
      // using array
     /*const updatedPublicationDb = db.publications.filter( (publication)=>
            publication.id !== parseInt(req.params.id)
@@ -251,7 +251,7 @@ routes.put('/publication/update/book/:isbn',async(req,res)=>{
  Method => delete
   */
 
-routes.delete('/publication/delete/book/:isbn/:pubId', async(req,res) =>{
+routes.delete('/delete/book/:isbn/:pubId', async(req,res) =>{
 
     // using array
     /*

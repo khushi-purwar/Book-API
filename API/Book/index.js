@@ -5,8 +5,8 @@ const routes = express.Router();
 // const db = require('../database/index')
 
 // Models
-const BookModel = require('../database/book');
-const AuthorModel = require('../database/author')
+const BookModel = require('../../database/book');
+const AuthorModel = require('../../database/author')
 
 //  get routes-----------------------------------------------------
 
@@ -17,7 +17,7 @@ Access => public
 Parameters => none
 Method => get
  */
-routes.get('/books', async (req, res) => {
+routes.get('', async (req, res) => {    // using the prefix
 
   // using array
   // return res.json({books: db.books});
@@ -36,7 +36,7 @@ Parameters => isbn
 Method => get
  */
 
-routes.get('/book/:isbn', async (req, res) => {
+routes.get('/:isbn', async (req, res) => {
 
   // using array
   //   const getBook = db.books.filter(
@@ -128,7 +128,7 @@ Parameters => none
 Method => post
  */
 
-routes.post('/book/new', (req, res) => {
+routes.post('/new', async(req, res) => {
 
   // using array
   // const {newBook} = req.body;
@@ -137,9 +137,18 @@ routes.post('/book/new', (req, res) => {
   //   return res.json({books: db.books , message:"Book was added"})
 
   // using mongoDB
-  const { newBook } = req.body;
-  BookModel.create(newBook);
-  return res.json({ message: "Book was added" })
+
+  try{
+    const { newBook } = req.body;
+    await BookModel.create(newBook);
+    return res.json({ message: "Book was added" })
+  }
+  catch(error){
+    return res.json({
+      error : error.message
+    })
+  }
+ 
 })
 
 //  --------------------------put requests-----------------------
@@ -153,7 +162,7 @@ Parameters => isbn
 Method => put
  */
 
-routes.put('/book/update/:isbn', async(req, res) => {
+routes.put('/update/:isbn', async(req, res) => {
   //  using array
   /*db.books.forEach((book) => {
     if (book.ISBN === req.params.isbn) {
@@ -188,7 +197,7 @@ Access => public
 Parameters => isbn
 Method => put
 */
-routes.put('/book/author/update/:isbn', async(req, res) => {
+routes.put('/author/update/:isbn', async(req, res) => {
   // using array
   /*
   // update book database -> book should be created before
@@ -261,7 +270,7 @@ routes.put('/book/author/update/:isbn', async(req, res) => {
  Method => delete
   */
 
-routes.delete('/book/delete/:isbn', async (req, res) => {
+routes.delete('/delete/:isbn', async (req, res) => {
   //  using array
   /*const updatedBookDb = db.books.filter((book) =>
     book.ISBN !== req.params.isbn
@@ -288,7 +297,7 @@ Parameters => isbn, authorId
 Method => delete
 */
 
-routes.delete('/book/delete/author/:isbn/:authorId', async(req, res) => {
+routes.delete('/delete/author/:isbn/:authorId', async(req, res) => {
   // using array
   /*
   // update book database      {forEach is used  becoz we are not modifying the whole database}

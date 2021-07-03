@@ -28,14 +28,14 @@ console.log(err.message)
 app.use(express.json());
 
 // importing bookRoutes, authorRoutes, publicationRoutes
-const bookRoutes = require('./Routes/book');
-const authorRoutes = require('./Routes/author');
-const publicationRoutes = require('./Routes/publication');
+const bookRoutes = require('./API/Book');   
+const authorRoutes = require('./API/Author');
+const publicationRoutes = require('./API/Publication');
 
-// using the above import routes
-app.use(bookRoutes)
-app.use(authorRoutes);
-app.use(publicationRoutes);
+// initialize microservices
+app.use("/book",bookRoutes)   // using prefix
+app.use("/author",authorRoutes);
+app.use("/publication",publicationRoutes);
 
 app.get('/',(req,res)=>{
     res.send("BOOK MANAGEMENT API");

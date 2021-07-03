@@ -3,7 +3,7 @@ const routes = express.Router();
 
 // database 
 // const db = require('../database/index')
-const AuthorModel = require('../database/author')
+const AuthorModel = require('../../database/author')
 
 //  get routes-----------------------------------------------------
 
@@ -14,7 +14,7 @@ Access => public
 Parameters => none
 Method => get
  */
-routes.get('/authors', async (req, res) => {
+routes.get('', async (req, res) => {
 
     // usimg array
     // return res.json({authors: db.authors});
@@ -32,7 +32,7 @@ Parameters => id
 Method => get
  */
 
-routes.get('/authors/:id', async (req, res) => {
+routes.get('/:id', async (req, res) => {
 
     //  using array
     /* const getAuthor = db.authors.filter(
@@ -62,7 +62,7 @@ Parameters => isbn
 Method => get
  */
 
-routes.get('/author/:isbn', async (req, res) => {
+routes.get('/is/:isbn', async (req, res) => {
     // using array
     /*const getAuthors = db.authors.filter(
         (author)=> author.books.includes(req.params.isbn)
@@ -96,7 +96,7 @@ Parameters => none
 Method => post
  */
 
-routes.post('/author/new', (req, res) => {
+routes.post('/new', (req, res) => {
 
     // using array
     // const {newAuthor} = req.body;
@@ -119,7 +119,7 @@ Parameters => id
 Method => put
  */
 
-routes.put('/author/update/:id', async (req, res) => {
+routes.put('/update/:id', async (req, res) => {
 
     // using array
     /*db.authors.forEach( (author)=>{
@@ -155,7 +155,7 @@ routes.put('/author/update/:id', async (req, res) => {
  Method => delete
   */
 
-routes.delete('/author/delete/:id', async (req, res) => {
+routes.delete('/delete/:id', async (req, res) => {
     // using array
     /*const updatedAuthorDb = db.authors.filter( (author)=>
            author.id != req.params.id

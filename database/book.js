@@ -3,7 +3,12 @@ const mongoose = require('mongoose');
 // create a schema
 const BookSchema = mongoose.Schema(
     {
-        ISBN : String,
+        ISBN : {
+            type: String,
+            required : true,
+            minlength :8,
+            maxlength:10
+        },
         title: String,
         authors : [Number],
         language : String,
